@@ -7,6 +7,7 @@ BUILD_PACKAGES="nasm yasm pthreads zlib bzip2 faac faad2 gsm lame opencoreamr op
 #BUILT_PACKAGES="nasm yasm pthreads zlib bzip2 faac faad2 gsm lame opencoreamr openssl rtmpdump libogg libvorbis libtheora x264 xvidcore"
 
 
+ALL_PACKAGES="${BUILD_PACKAGES} ${BUILT_PACKAGES}"
 LOCAL_PATCHES="ffmpeg.diff x264-pthreads.diff"
 for patch in ${LOCAL_PATCHES}
 do
@@ -39,16 +40,6 @@ do
   fi
 done
 
-PREBUILD1_EXTRAS="--enable-memalign-hack --enable-postproc"
-PREBUILD1_EXTRAS+=" --enable-gpl --enable-version3"
-PREBUILD1_EXTRAS+=" --disable-ffserver --disable-ffplay --disable-ffprobe"
-PREBUILD1_EXTRAS+=" --disable-decoder=aac"
-PREBUILD1_EXTRAS+=" --enable-avisynth"
-#PREBUILD1_EXTRAS+=" --disable-avfilter"
-#PREBUILD1_EXTRAS+=" --enable-small"
-
-# Core2 optimizations
-PREBUILD1_EXTRAS2="--extra-cflags='-mtune=core2 -mfpmath=sse -msse -fno-strict-aliasing'"
 
 if [ "${pthreads_ENABLED} " == "yes " ]; then
   PREBUILD1_EXTRAS+=" --enable-pthreads --extra-ldflags=-static"

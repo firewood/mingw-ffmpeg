@@ -115,7 +115,7 @@ else
     if [ "${PREBUILD1} " != " " ]; then
       echo "[${PACKAGE}] configuring"
       echo "# ${PREBUILD1} ${PREBUILD1_EXTRAS} ${PREBUILD1_EXTRAS2}"
-      ${PREBUILD1} ${PREBUILD1_EXTRAS} ${PREBUILD1_EXTRAS2}
+      ${PREBUILD1} ${PREBUILD1_EXTRAS} "${PREBUILD1_EXTRAS2}"
       if [ "$?" -ne 0 ]; then
         echo "[${PACKAGE}] configure failed"
         exit 1
