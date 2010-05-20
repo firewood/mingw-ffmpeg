@@ -1,0 +1,14 @@
+diff -ur x264.orig/configure x264/configure
+--- x264.orig/configure	2010-05-18 05:45:07 +0900
++++ x264/configure	2010-05-19 01:11:06 +0900
+@@ -477,6 +477,10 @@
+                 pthread="yes"
+                 libpthread="-lpthreadGC2 -lws2_32"
+                 define PTW32_STATIC_LIB
++            elif cc_check pthread.h "-lpthread -lws2_32 -DPTW32_STATIC_LIB" "pthread_create(0,0,0,0);" ; then
++                pthread="yes"
++                libpthread="-lpthread -lws2_32"
++                define PTW32_STATIC_LIB
+             fi
+             ;;
+         OPENBSD)
