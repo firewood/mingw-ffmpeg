@@ -7,84 +7,26 @@ BUILD_PACKAGES="nasm yasm pthreads zlib bzip2 faac faad2 gsm lame opencoreamr op
 #BUILT_PACKAGES="nasm yasm pthreads zlib bzip2 faac faad2 gsm lame opencoreamr openssl rtmpdump libogg libvorbis libtheora x264 xvidcore"
 
 
-# x264 patch
-mkdir -p archives
-cat > archives/x264-pthreads.diff << EOT
-diff -ur x264.orig/configure x264/configure
---- x264.orig/configure	2010-05-18 05:45:07 +0900
-+++ x264/configure	2010-05-19 01:11:06 +0900
-@@ -477,6 +477,10 @@
-                 pthread="yes"
-                 libpthread="-lpthreadGC2 -lws2_32"
-                 define PTW32_STATIC_LIB
-+            elif cc_check pthread.h "-lpthread -lws2_32 -DPTW32_STATIC_LIB" "pthread_create(0,0,0,0);" ; then
-+                pthread="yes"
-+                libpthread="-lpthread -lws2_32"
-+                define PTW32_STATIC_LIB
-             fi
-             ;;
-         OPENBSD)
-EOT
-
-
-# ffmpeg patch
-cat > archives/ffmpeg.diff << EOT
-diff -ur ffmpeg.orig/configure ffmpeg/configure
---- ffmpeg.orig/configure	2010-05-17 02:49:04 +0900
-+++ ffmpeg/configure	2010-05-17 02:49:04 +0900
-@@ -2608,22 +2608,22 @@
-                       require  libdirac libdirac_encoder/dirac_encoder.h dirac_encoder_init \$(pkg-config --libs dirac)
- enabled libfaac    && require2 libfaac "stdint.h faac.h" faacEncGetVersion -lfaac
- enabled libfaad    && require2 libfaad faad.h faacDecOpen -lfaad
--enabled libgsm     && require  libgsm gsm/gsm.h gsm_create -lgsm
-+enabled libgsm     && require  libgsm gsm.h gsm_create -lgsm
- enabled libmp3lame && require  libmp3lame lame/lame.h lame_init -lmp3lame -lm
- enabled libnut     && require  libnut libnut.h nut_demuxer_init -lnut
- enabled libopencore_amrnb  && require libopencore_amrnb opencore-amrnb/interf_dec.h Decoder_Interface_init -lopencore-amrnb -lm
- enabled libopencore_amrwb  && require libopencore_amrwb opencore-amrwb/dec_if.h D_IF_init -lopencore-amrwb -lm
- enabled libopenjpeg && require libopenjpeg openjpeg.h opj_version -lopenjpeg
--enabled librtmp    && require  librtmp librtmp/rtmp.h RTMP_Init -lrtmp
-+enabled librtmp    && require  librtmp librtmp/rtmp.h RTMP_Init -lrtmp -lssl -lcrypto -lwinmm -lws2_32 -lgdi32 -lz
- enabled libschroedinger && add_cflags \$(pkg-config --cflags schroedinger-1.0) &&
-                            require libschroedinger schroedinger/schro.h schro_init \$(pkg-config --libs schroedinger-1.0)
- enabled libspeex   && require  libspeex speex/speex.h speex_decoder_init -lspeex
- enabled libtheora  && require  libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
- enabled libvorbis  && require  libvorbis vorbis/vorbisenc.h vorbis_info_init -lvorbisenc -lvorbis -logg
--enabled libx264    && require  libx264 x264.h x264_encoder_encode -lx264 -lm &&
-+enabled libx264    && require  libx264 x264.h x264_encoder_encode -lx264 -lm -lpthread -lws2_32 &&
-                       { check_cpp_condition x264.h "X264_BUILD >= 90" ||
-                         die "ERROR: libx264 version must be >= 0.90."; }
--enabled libxvid    && require  libxvid xvid.h xvid_global -lxvidcore
-+enabled libxvid    && require  libxvid xvid.h xvid_global -lxvidcore  -lpthread -lws2_32
- enabled mlib       && require  mediaLib mlib_types.h mlib_VectorSub_S16_U8_Mod -lmlib
- 
- # libdc1394 check
---- ffmpeg.orig/libavcodec/libxvidff.c	2010-04-20 23:45:34 +0900
-+++ ffmpeg/libavcodec/libxvidff-new.c	2010-05-17 04:34:34 +0900
-@@ -408,6 +408,11 @@
-     xvid_enc_frame.motion = x->me_flags;
-     xvid_enc_frame.type = XVID_TYPE_AUTO;
- 
-+    /* Fix default aspect ratio */
-+    if (avctx->sample_aspect_ratio.num == 0 && avctx->sample_aspect_ratio.den == 1) {
-+        avctx->sample_aspect_ratio.num = 1;
-+    }
-+
-     /* Pixel aspect ratio setting */
-     if (avctx->sample_aspect_ratio.num < 1 || avctx->sample_aspect_ratio.num > 255 ||
-         avctx->sample_aspect_ratio.den < 1 || avctx->sample_aspect_ratio.den > 255) {
-EOT
+LOCAL_PATCHES="ffmpeg.diff x264-pthreads.diff"
+for patch in ${LOCAL_PATCHES}
+do
+  if [ ! -f archives/${patch} ]; then
+    cp -a ${patch} archives/
+  fi
+done
 
 
 # configure
 for package in ${BUILD_PACKAGES}
 do
   ./modbuild.sh ${package} ${OPERATION}
+  if [ "$?" -ne 0 ]; then
+    exit 1
+  fi
 done
 
 
 # check enabled modules
-ALL_PACKAGES="${BUILD_PACKAGES} ${BUILT_PACKAGES}"
 for package in ${ALL_PACKAGES}
 do
   if [ -f ${package}.ini ]; then

@@ -2,6 +2,10 @@
 
 
 TOPDIR=`pwd`
+OPERATION=$2
+if [ "${OPERATION} " == " " ]; then
+  OPERATION=build
+fi
 
 
 function get_patch_filename {
@@ -89,11 +93,6 @@ if [ "${_BLDDIR} " == " " ]; then
 fi
 if [ -d "${_BLDDIR}" ]; then
   cd ${_BLDDIR}
-  echo "[${PACKAGE}] build directory: ${_BLDDIR}"
-
-
-
-
 else
   echo "[${PACKAGE}] extracting: ${ARCHIVEFILE}"
   ${EXTRACT_COMMAND} ${EXTRACT_OPTIONS} ../archives/${ARCHIVEFILE}
@@ -117,40 +116,58 @@ else
       echo "[${PACKAGE}] configuring"
       echo "# ${PREBUILD1} ${PREBUILD1_EXTRAS} ${PREBUILD1_EXTRAS2}"
       ${PREBUILD1} ${PREBUILD1_EXTRAS} ${PREBUILD1_EXTRAS2}
+      if [ "$?" -ne 0 ]; then
+        echo "[${PACKAGE}] configure failed"
+        exit 1
+      fi
     fi
     if [ "${PREBUILD2} " != " " ]; then
       echo "[${PACKAGE}] configuring"
       echo "# ${PREBUILD2}"
       ${PREBUILD2}
+      if [ "$?" -ne 0 ]; then
+        echo "[${PACKAGE}] configure failed"
+        exit 1
+      fi
     fi
     if [ "${PREBUILD3} " != " " ]; then
       echo "[${PACKAGE}] configuring"
       echo "# ${PREBUILD3}"
       ${PREBUILD3}
+      if [ "$?" -ne 0 ]; then
+        echo "[${PACKAGE}] configure failed"
+        exit 1
+      fi
     fi
   #fi
 fi
 
 
-#if [ "$2 " == "clean " ]; then
-#  if [ "${CLEAN} " != " " ]; then
-#    echo "[${PACKAGE}] clean"
-#    echo "# ${CLEAN}"
-#    ${CLEAN}
-#  fi
-#fi
+if [ "${OPERATION} " == "clean " ]; then
+  if [ "${CLEAN} " != " " ]; then
+    echo "[${PACKAGE}] clean"
+    echo "# ${CLEAN}"
+    ${CLEAN}
+    exit $?
+  fi
+fi
 
 
 # build
-#if [ "$2 " == "build " ]; then
+if [ "${OPERATION} " == "build " ]; then
   if [ "${BUILD} " != " " ]; then
     echo "[${PACKAGE}] building"
     echo "# ${BUILD}"
     ${BUILD}
+    if [ "$?" -ne 0 ]; then
+      echo "[${PACKAGE}] build failed"
+      exit 1
+    fi
   fi
-#fi
+fi
 
-#if [ "$2 " == "install " ]; then
+
+#if [ "${OPERATION} " == "install " ]; then
   if [ "${POSTBUILD1} " != " " ]; then
     echo "[${PACKAGE}] installing"
     echo "# ${POSTBUILD1}"
