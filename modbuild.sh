@@ -178,5 +178,10 @@ fi
     echo "# ${POSTBUILD2}"
     ${POSTBUILD2} < /dev/null
   fi
+  if [ "${POSTBUILD3} " != " " ]; then
+    echo "[${PACKAGE}] installing"
+    echo "# ${POSTBUILD3}"
+    ${POSTBUILD3} < /dev/null
+  fi
 #fi
 

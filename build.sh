@@ -2,9 +2,9 @@
 
 
 OPERATION=$1
-BUILD_PACKAGES="nasm yasm pthreads zlib bzip2 faac faad2 gsm lame opencoreamr openssl rtmpdump libogg libvorbis libtheora x264 xvidcore"
+BUILD_PACKAGES="nasm yasm pthreads zlib bzip2 faac faad2 gsm lame opencoreamr openssl rtmpdump libogg libvorbis libtheora libvpx x264 xvidcore"
 #BUILD_PACKAGES=""
-#BUILT_PACKAGES="nasm yasm pthreads zlib bzip2 faac faad2 gsm lame opencoreamr openssl rtmpdump libogg libvorbis libtheora x264 xvidcore"
+#BUILT_PACKAGES="nasm yasm pthreads zlib bzip2 faac faad2 gsm lame opencoreamr openssl rtmpdump libogg libvorbis libtheora libvpx x264 xvidcore"
 
 
 ALL_PACKAGES="${BUILD_PACKAGES} ${BUILT_PACKAGES}"
