@@ -5,9 +5,9 @@ diff -ur x264.orig/configure x264/configure
                  pthread="yes"
                  libpthread="-lpthreadGC2 -lws2_32"
                  define PTW32_STATIC_LIB
-+            elif cc_check pthread.h "-lpthread -lws2_32 -DPTW32_STATIC_LIB" "pthread_create(0,0,0,0);" ; then
++            elif cc_check pthread.h "-lpthread -DPTW32_STATIC_LIB" "pthread_create(0,0,0,0);" ; then
 +                pthread="yes"
-+                libpthread="-lpthread -lws2_32"
++                libpthread="-lpthread"
 +                define PTW32_STATIC_LIB
              fi
              ;;

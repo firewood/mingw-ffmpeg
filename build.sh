@@ -68,6 +68,9 @@ fi
 if [ "${libogg_ENABLED}${libtheora_ENABLED} " == "yesyes " ]; then
   PREBUILD1_EXTRAS+=" --enable-libtheora"
 fi
+if [ "${libvpx_ENABLED} " == "yes " ]; then
+  PREBUILD1_EXTRAS+=" --enable-libvpx"
+fi
 if [ "${x264_ENABLED} " == "yes " ]; then
   PREBUILD1_EXTRAS+=" --enable-libx264"
 fi
